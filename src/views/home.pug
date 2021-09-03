@@ -1,4 +1,9 @@
-extends base.pug
+extends base
+include mixins/video
 
 block content 
     h2 welcome here~~
+    
+    each info in videos
+        +video(info)
+
