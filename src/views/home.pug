@@ -1,9 +1,9 @@
 extends base
 include mixins/video
 
-block content 
-    h2 welcome here~~
-    
+block content   
     each info in videos
         +video(info)
+    else 
+        li sorry not found
 

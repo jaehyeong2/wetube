@@ -1,3 +1,4 @@
+
 import express from "express";
 import morgan from "morgan";
 import globalRouter from "./routers/globalRouter";
@@ -15,8 +16,7 @@ app.use("/",globalRouter);
 app.use("/user",userRouter);
 app.use("/videos",videoRouter);
 
+export default app;
 
-app.get("/", () => console.log("trying to go home"));
 
-app.listen(4000,() => console.log("리스닝 중~"));
 
