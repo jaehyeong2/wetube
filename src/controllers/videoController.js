@@ -34,7 +34,6 @@ export const postUpload = async(req,res) => {
        description,
        createdAt: Date.now(),
        hashtags:hashtags.split(",").map((word) => `#${word}`),
-     
    }); 
     return res.redirect("/");
 } catch(error){
