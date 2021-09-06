@@ -6,41 +6,61 @@ export const home = async(req,res) => {
     return res.render("home",{pageTitle : "Home", videos});
 }
 
-export const watch = (req,res)=> {
-    const id = req.params.id;   
-    return res.render("watch",{ pageTitle: `Watching: `});
+export const watch = async(req,res)=> {
+    const id = req.params.id; 
+    const video = await Video.findById(id);
+    if(!video){
+        return res.render("404",{ pageTitle : "page not found"});
+    }else{
+        return res.render("watch",{ pageTitle: video.title, video});
+    }
 }
-export const getEdit = (req,res) => {
+
+export const getEdit = async(req,res) => {
     const id = req.params.id;
-    return res.render("edit",{pageTitle : `Editing: `});
+    const video = await Video.findById(id);
+    if(!video){
+        return res.render("404", { pageTitle : "Video not found"});
+    } else{
+        return res.render("edit",{pageTitle : `Editing: ${video.title} `, video});
+    }
 }
-export const postEdit = (req,res) => {
+
+export const postEdit = async (req,res) => {
     const id = req.params.id;
-    const title = req.body.title;
-   
+    const { title, description, hashtags} = req.body;
+    const video = await Video.findById(id);
+    if(!video){
+        return res.render("404", { pageTitle : "Video not found"});
+    }
+    video.title = title;
+    video.description = description;
+    video.hashtags = hashtags
+    .split(",")
+    .map((word) => (word.startsWith(`#`)? word:`#${word}`));
+    await video.save();
     return res.redirect(`/videos/${id}`);
-    
 }
 
 export const getUpload = (req,res) => {
     return res.render("upload",{pageTitle:"Upload video"});
 }
 
-export const postUpload = async(req,res) => {
-   const {title, description, hashtags} = req.body;
-   try{
-   await Video.create({
-       title, 
-       description,
-       createdAt: Date.now(),
-       hashtags:hashtags.split(",").map((word) => `#${word}`),
-   }); 
-    return res.redirect("/");
-} catch(error){
-    return res.render("upload", {
-        pageTitle: "Upload Video", 
-        errorMessage: error._message
-    });
-}}
-
-
+export const postUpload = async (req, res) => {
+    const { title, description, hashtags } = req.body;
+    try {
+      await Video.create({
+        title,
+        description,
+        hashtags: hashtags
+        .split(",")
+        .map((word) => (word.startsWith(`#`)? word:`#${word}`))
+      });
+      return res.redirect("/");
+    } catch (error) {
+      return res.render("upload", {
+        pageTitle: "Upload Video",
+        errorMessage: error._message,
+      });
+    }
+  };
